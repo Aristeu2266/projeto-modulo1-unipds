@@ -1,7 +1,4 @@
-package br.com.zenon.fraud;
-
-import br.com.zenon.enums.TransactionType;
-import br.com.zenon.models.TransactionCustomer;
+package br.com.zenon;
 
 import java.math.BigDecimal;
 

@@ -1,6 +1,4 @@
-package br.com.zenon.models;
-
-import java.math.BigDecimal;
+package br.com.zenon;
 
 public record TransactionCustomer(String name, double oldBalance, double newBalance) {
 
