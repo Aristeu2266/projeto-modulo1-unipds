@@ -2,18 +2,18 @@ package br.com.zenon;
 
 import java.math.BigDecimal;
 
-public record Transaction(int step, TransactionType transactionType, BigDecimal amount, TransactionCustomer orig,
-                          TransactionCustomer dest, boolean isFraud, boolean isFlaggedFraud) {
+public record Transaction(int step, TransactionType type, BigDecimal amount, TransactionCustomer origin,
+                          TransactionCustomer recipient, boolean isFraud, boolean isFlaggedFraud) {
     @Override
     public String toString() {
-        return "Transaction{" + "\n" +
-                "step=" + step + "\n" +
-                "transactionType=" + transactionType + "\n" +
-                "amount=" + amount + "\n" +
-                "orig=" + orig + "\n" +
-                "dest=" + dest + "\n" +
-                "isFraud=" + isFraud + "\n" +
-                "isFlaggedFraud=" + isFlaggedFraud + "\n" +
+        return "Transaction{" + 
+                ", step=" + step +
+                ", type=" + type +
+                ", amount=" + amount +
+                ", origin=" + origin +
+                ", recipient=" + recipient +
+                ", isFraud=" + isFraud +
+                ", isFlaggedFraud=" + isFlaggedFraud +
                 '}';
     }
 }
