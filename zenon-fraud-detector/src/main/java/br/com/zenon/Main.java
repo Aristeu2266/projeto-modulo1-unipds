@@ -1,6 +1,7 @@
 package br.com.zenon;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Main {
     void main(String[] args) {
@@ -14,10 +15,11 @@ public class Main {
 //
 //        Transaction t2 = new Transaction(743, TransactionType.CASH_OUT, BigDecimal.valueOf(850002.52), cOrig2, cDest2, true, false);
 
-        TransactionIngestor ingestor = new TransactionIngestor("data/PS_20174392719_1491204439457_log.csv", 1000);
+        TransactionIngestor ingestor = new TransactionIngestor("data/paysim_with_bad_data.csv");
 
-        for (int i = 0; i < 10; i ++) {
-            System.out.println(ingestor.getTransactions().get(i));
-        }
+        List<Transaction> transaction = ingestor.getTransactions();
+        IO.println(transaction.size());
+        transaction.forEach(IO::println);
+
     }
 }
