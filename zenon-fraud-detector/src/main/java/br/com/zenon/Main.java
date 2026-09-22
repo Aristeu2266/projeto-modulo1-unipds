@@ -1,43 +1,16 @@
 package br.com.zenon;
 
-import br.com.zenon.TransactionReport.Statistics;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Currency;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 public class Main {
-    void main(String[] args) {
-        String language = (args.length > 0) ? args[0] : "pt";
+    void main() {
+        var ingestor = new TransactionIngestor("data/PS_20174392719_1491204439457_log.csv", 10000);
+        var repository = new TransactionSQLRepository();
 
-        Locale locale = Locale.of(language);
+        long start = System.nanoTime();
+        ingestor.getTransactions().forEach(repository::save);
+        long end = System.nanoTime();
+        IO.println("Time: " + (end - start) / 1000000 + "ms");
 
-        var integerFormatter = NumberFormat.getIntegerInstance(locale);
-        var currencyFormatter = DecimalFormat.getCurrencyInstance(locale);
-        currencyFormatter.setCurrency(Currency.getInstance("USD"));
-
-        var resourceBundle = ResourceBundle.getBundle("report", locale);
-
-        var transactionReport = new TransactionReport();
-
-        Statistics statistics = transactionReport.generateReport("data/PS_20174392719_1491204439457_log.csv");
-
-        String fmtTotalTransactions = integerFormatter.format(statistics.totalTransactions());
-        String fmtTotalFrauds = integerFormatter.format(statistics.totalFrauds());
-        String fmtTotalAmount = currencyFormatter.format(statistics.totalAmount());
-
-        String msgTotalTransactions = resourceBundle.getString("label.total.transactions");
-        String msgTotalFrauds = resourceBundle.getString("label.total.frauds");
-        String msgTotalAmount = resourceBundle.getString("label.total.amount");
-
-        IO.print("""
-                %s: %s
-                %s: %s
-                %s: %s
-                """.formatted(msgTotalTransactions, fmtTotalTransactions,
-                msgTotalFrauds, fmtTotalFrauds,
-                msgTotalAmount, fmtTotalAmount));
+        repository.getTransactionByOriginName("C1231006815")
+                .ifPresentOrElse(IO::println, () -> System.out.println("Not found"));
     }
 }
