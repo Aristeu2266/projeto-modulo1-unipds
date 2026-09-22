@@ -20,4 +20,9 @@ public class TransactionListRepository implements TransactionRepository {
                 .findFirst();
     }
 
+    @Override
+    public void save(Transaction transaction) {
+        this.transactions.add(transaction);
+    }
+
 }
