@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -17,6 +18,8 @@ public class BetterTransactionIngestor {
     private final String path;
     private final Logger logger = Logger.getLogger("TransactionIngestor");
 
+    private final Semaphore dbPermits = new Semaphore(100);
+
     public BetterTransactionIngestor(String path) {
         this.path = path;
     }
@@ -24,7 +27,7 @@ public class BetterTransactionIngestor {
     public void readAsBatch(Consumer<List<Transaction>> consumer) {
         Path path = Path.of(this.path);
 
-        try (ExecutorService executor = Executors.newFixedThreadPool(10);
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
              BufferedReader br = Files.newBufferedReader(path)) {
             var iterator = br.lines().iterator();
 
@@ -57,7 +60,15 @@ public class BetterTransactionIngestor {
                 .map(this::parseTransaction)
                 .filter(Optional::isPresent)
                 .map(Optional::get).toList();
-        consumer.accept(transactionBatch);
+        try {
+            dbPermits.acquire();
+            consumer.accept(transactionBatch);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while reading file:\n" + e);
+        } finally {
+            dbPermits.release();
+        }
     }
 
     public void readAsStream(Consumer<Transaction> consumer) {
