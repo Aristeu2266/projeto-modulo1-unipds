@@ -83,5 +83,6 @@ public class TransactionIngestor {
 
     public void setNumberOfLines(int numberOfLines) {
         this.numberOfLines = numberOfLines;
+        loadTransactions();
     }
 }
